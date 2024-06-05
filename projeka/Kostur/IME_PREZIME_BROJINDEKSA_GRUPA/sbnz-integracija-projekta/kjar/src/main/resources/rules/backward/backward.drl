@@ -1,0 +1,41 @@
+package backward;
+
+import com.ftn.sbnz.model.models.CrochetType;
+import com.ftn.sbnz.model.models.Preference;
+import com.ftn.sbnz.model.models.Recommendation;
+import com.ftn.sbnz.model.models.Pattern;
+
+query isNotDisliked( String name, String parentCrochetType )
+    CrochetType( name, parentCrochetType, false; )
+    and
+    ( CrochetType( parentCrochetType, parentsParentType, false; ) and isNotDisliked( parentCrochetType, parentsParentType; )
+    )
+    or CrochetType(parentCrochetType, "", false; )
+end
+
+rule "Find recommendation"
+    when
+        Preference($diff: difficulty, $ct: CrochetType)
+        $pattern: Pattern(difficultyLevel == $diff, parentType == $ct, done == false)
+    then
+        Recommendation r =new Recommendation($pattern); 
+        insert(r);
+        System.out.println(r);
+end
+
+rule "isNotDislikedType"
+    when
+        $p: Recommendation(accepted == false);
+        isNotDisliked($p.pattern.parentType.name, parentCrochetType; )
+    then
+        System.out.println($p.getPattern().getParentType().getName());
+        System.out.println("All good");
+end
+
+rule "isNotDislikedType2"
+    when
+        $c: CrochetType( name == "Animals")
+        isNotDisliked($c.name, parent; )
+    then
+        System.out.println("All good test");
+end

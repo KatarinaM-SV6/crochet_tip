@@ -1,0 +1,83 @@
+package forward;
+
+import com.ftn.sbnz.model.models.CrochetPeriod;
+import com.ftn.sbnz.model.models.Korisnik;
+import com.ftn.sbnz.model.models.Pattern;
+import java.time.Duration;
+import java.time.LocalDate;
+
+rule "Find hours crocheted past month"
+    no-loop true
+    when
+        $u: Korisnik($userId: id)
+        $n: Duration() from accumulate(
+            $c2: CrochetPeriod(
+                $duration: duration,
+                user.id == $userId,
+                date.isAfter(LocalDate.now().minusMonths(1))),
+            init(Duration count = Duration.ZERO;),
+            action(count = count.plus($duration);),
+            reverse(count = count.minus($duration);),
+            result(count)
+        )
+    then
+        System.out.println($n.toMinutes());
+end
+
+rule "Find hours crocheted past 7 days"
+    no-loop true
+    when
+        $u: Korisnik($userId: id)
+        $n: Duration() from accumulate(
+            $c2: CrochetPeriod(
+                $duration: duration,
+                user.id == $userId,
+                date.isAfter(LocalDate.now().minusDays(7))),
+            init(Duration count = Duration.ZERO;),
+            action(count = count.plus($duration);),
+            reverse(count = count.minus($duration);),
+            result(count)
+        )
+    then
+        System.out.println($n.toMinutes());
+end
+
+rule "Find hours crocheted past 24 hours"
+    no-loop true
+    when
+        $u: Korisnik($userId: id)
+        $n: Duration() from accumulate(
+            $c2: CrochetPeriod(
+                $duration: duration,
+                user.id == $userId,
+                date.isAfter(LocalDate.now().minusDays(1))),
+            init(Duration count = Duration.ZERO;),
+            action(count = count.plus($duration);),
+            reverse(count = count.minus($duration);),
+            result(count)
+        )
+    then
+        System.out.println($n.toMinutes());
+end
+
+
+rule "Find amount of finished patterns"
+    no-loop true
+    when
+        $i: Number() from accumulate(
+            $p: Pattern(done == true),
+            init(int count = 0;),
+            action(count += 1;),
+            reverse(count -= 1;),
+            result(count)
+        )
+        $n: Number() from accumulate(
+            $p: Pattern(),
+            init(int count = 0;),
+            action(count += 1;),
+            reverse(count -= 1;),
+            result(count)
+        )
+    then
+        System.out.println($i + "/" + $n);
+end

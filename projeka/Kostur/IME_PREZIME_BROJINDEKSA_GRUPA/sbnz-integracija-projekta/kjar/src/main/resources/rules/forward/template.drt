@@ -1,0 +1,26 @@
+template header
+difficulty
+type
+
+package forward;
+
+
+import java.time.Duration;
+import java.time.LocalDate;
+import com.ftn.sbnz.model.models.Pattern;
+import com.ftn.sbnz.model.models.Difficulty;
+import com.ftn.sbnz.model.models.CrochetType;
+
+template "patternSuggestion"
+
+rule "Get pattern for preferences"
+no-loop true
+when
+    $p: Pattern(difficultyLevel == @{difficulty}, 
+    			age <= @{maxAge}, 
+    			category == Customer.Category.@{previousCategory})
+then
+    modify ($c){ setCategory(Customer.Category.@{newCategory})};
+end
+
+end template
