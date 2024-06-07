@@ -1,5 +1,6 @@
 package com.ftn.sbnz.model.models;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -25,8 +27,8 @@ public class Korisnik implements UserDetails{
     private String email;
     @Column
     private String password;
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Pattern> finishedPatterns;
+    // @OneToMany(fetch = FetchType.EAGER)
+    // private List<Pattern> finishedPatterns;
 
     public Korisnik() {
     }
@@ -36,6 +38,7 @@ public class Korisnik implements UserDetails{
         this.username = username;
         this.email = email;
         this.password = password;
+        // this.finishedPatterns = new ArrayList<Pattern>();
     }
 
     public Integer getId() {
@@ -95,5 +98,14 @@ public class Korisnik implements UserDetails{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
+
+    // public List<Pattern> getFinishedPatterns() {
+    //     return this.finishedPatterns;
+    // }
+
+    // public void setFinishedPatterns(List<Pattern> finishedPatterns) {
+    //     this.finishedPatterns = finishedPatterns;
+    // }
+
 
 }

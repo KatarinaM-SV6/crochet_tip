@@ -33,7 +33,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-
+		String path = request.getRequestURI();
+		System.out.println(path);
+		if (path.equals("/api/register")) {
+			chain.doFilter(request, response);
+			return;
+		}
 
 		String email;
 		
