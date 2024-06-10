@@ -3,6 +3,7 @@ package com.ftn.sbnz.service.services.implementations;
 import com.ftn.sbnz.model.models.Korisnik;
 import com.ftn.sbnz.model.models.Pattern;
 import com.ftn.sbnz.service.model.LoginDTO;
+import com.ftn.sbnz.service.model.loginResponseDTO;
 import com.ftn.sbnz.service.repositories.IUserRepository;
 import com.ftn.sbnz.service.services.IUserService;
 import com.ftn.sbnz.service.utils.TokenUtils;
@@ -51,23 +52,23 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public String register(Korisnik dto) {
+    public loginResponseDTO register(Korisnik dto) {
         try {
             findByEmail(dto.getEmail());
             throw new Exception("User with given email already existis.");
         }catch (Exception ex) {
-            Korisnik user = new Korisnik(null, dto.getUsername(), dto.getEmail(), passwordEncoder.encode(dto.getPassword()));
+            Korisnik user = new Korisnik(dto.getEmail(), passwordEncoder.encode(dto.getPassword()));
             user = userRepository.save(user);
             userRepository.flush();
             
             String token = tokenUtils.generateToken(user);
             kieSessionService.createUserSession(user);
-            return token;
+            return new loginResponseDTO(user, token);
         }
     }
 
     @Override
-    public String login(LoginDTO dto) {
+    public loginResponseDTO login(LoginDTO dto) {
         try {
             // Find the user by email
             Korisnik user = findByEmail(dto.getEmail());
@@ -77,7 +78,7 @@ public class UserService implements IUserService, UserDetailsService {
                 // Generate a token and create a user session
                 kieSessionService.createUserSession(user);
                 String token = tokenUtils.generateToken(user);
-                return token;
+                return new loginResponseDTO(user, token);
             } else {
                 throw new Exception("Invalid email or password.");
             }

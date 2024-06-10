@@ -51,6 +51,7 @@ public class RecommendationController {
 
     @PutMapping("/reject")
 	public ResponseEntity<?> rejectRecommendation(@RequestHeader("Authorization") String token, @RequestBody Recommendation rec) {
+        System.out.println(token);
         Integer userId = tokenUtils.getIdFromToken(token.substring(7));
 
         Recommendation rec2 = kieSessionService.rejectRecommendation(userId, rec);

@@ -22,6 +22,8 @@ import com.ftn.sbnz.model.models.Yarn;
 import com.ftn.sbnz.model.models.Color;
 import com.ftn.sbnz.model.models.YarnType;
 import com.ftn.sbnz.model.models.WoolSize;
+
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
 
@@ -36,7 +38,7 @@ public class AccumulateTest {
         KieSession ksession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kc, ksessionName);
         
         
-        Korisnik user = new Korisnik(1, "user1", "email", "password");
+        Korisnik user = new Korisnik("email", "password");
         ksession.insert(user);
         CrochetPeriod period1 = new CrochetPeriod(Duration.ofMinutes(20), LocalDate.now().minusDays(5)); 
         System.out.println("first " + LocalDate.now().minusDays(1));
@@ -113,5 +115,21 @@ public class AccumulateTest {
         // MatcherAssert.assertThat(order2.getDiscount().getPercentage(), notNullValue());
         // MatcherAssert.assertThat(order2.getDiscount().getPercentage(), equalTo(0.05));
     }
+
+    // @Test
+    // public void testSimpleTemplateWithSpreadsheet2(){
+        
+    //     InputStream template = RuleTemplatesTest.class.getResourceAsStream("/templatetable/customer-classification-simple.drt");
+    //     InputStream data = RuleTemplatesTest.class.getResourceAsStream("/templatetable/template-data.xls");
+        
+    //     ExternalSpreadsheetCompiler converter = new ExternalSpreadsheetCompiler();
+    //     String drl = converter.compile(data, template, 3, 2);
+        
+    //     System.out.println(drl);
+        
+    //     KieSession ksession = this.createKieSessionFromDRL(drl);
+        
+    //     this.doTest(ksession);
+    // }
 
 }

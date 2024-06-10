@@ -37,7 +37,7 @@ public class StatisticsController {
 	private KieSessionService kieSessionService;
 
     @GetMapping("/")
-	public ResponseEntity<?> getStats(@RequestHeader("Authorization") String token, @RequestParam String period) {
+	public ResponseEntity<?> getStats(@RequestHeader("Authorization") String token) {
         Integer userId = tokenUtils.getIdFromToken(token.substring(7));
 		StatsDTO dto = kieSessionService.getStats(userId);
         return new ResponseEntity<StatsDTO>(dto, HttpStatus.OK);

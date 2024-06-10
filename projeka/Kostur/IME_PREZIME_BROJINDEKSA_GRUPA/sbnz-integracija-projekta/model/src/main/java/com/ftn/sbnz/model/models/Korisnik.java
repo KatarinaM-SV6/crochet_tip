@@ -23,8 +23,6 @@ public class Korisnik implements UserDetails{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    private String username;
-    @Column
     private String email;
     @Column
     private String password;
@@ -37,9 +35,8 @@ public class Korisnik implements UserDetails{
     public Korisnik() {
     }
 
-    public Korisnik(Integer id, String username, String email, String password) {
+    public Korisnik(String email, String password) {
         this.id = id;
-        this.username = username;
         this.email = email;
         this.password = password;
         this.currPattern = null;
@@ -52,10 +49,6 @@ public class Korisnik implements UserDetails{
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
