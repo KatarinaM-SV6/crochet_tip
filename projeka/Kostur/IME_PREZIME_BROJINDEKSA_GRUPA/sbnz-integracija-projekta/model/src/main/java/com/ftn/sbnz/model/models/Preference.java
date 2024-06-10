@@ -2,15 +2,16 @@ package com.ftn.sbnz.model.models;
 
 public class Preference {
     private Difficulty difficulty;
-    private CrochetType crochetType;
+    // private CrochetType crochetType;
+    
 
 
     public Preference() {
     }
 
-    public Preference(Difficulty difficulty, CrochetType crochetType) {
+    public Preference(Difficulty difficulty) {
         this.difficulty = difficulty;
-        this.crochetType = crochetType;
+        // this.crochetType = crochetType;
     }
 
     public Difficulty getDifficulty() {
@@ -21,12 +22,12 @@ public class Preference {
         this.difficulty = difficulty;
     }
 
-    public CrochetType getCrochetType() {
-        return this.crochetType;
-    }
+    // public CrochetType getCrochetType() {
+    //     return this.crochetType;
+    // }
 
-    public void setCrochetType(CrochetType crochetType) {
-        this.crochetType = crochetType;
-    }
+    // public void setCrochetType(CrochetType crochetType) {
+    //     this.crochetType = crochetType;
+    // }
 
 }

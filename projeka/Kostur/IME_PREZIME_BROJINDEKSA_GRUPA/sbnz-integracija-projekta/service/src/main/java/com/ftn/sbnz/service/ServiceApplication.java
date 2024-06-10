@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieScanner;
 import org.kie.api.runtime.KieContainer;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@EnableScheduling
 @SpringBootApplication
 @EntityScan("com.ftn.sbnz.model")
 public class ServiceApplication  {

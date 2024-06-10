@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,9 @@ public class Korisnik implements UserDetails{
     private String email;
     @Column
     private String password;
+
+    @ManyToOne
+    private Pattern currPattern;
     // @OneToMany(fetch = FetchType.EAGER)
     // private List<Pattern> finishedPatterns;
 
@@ -38,6 +42,7 @@ public class Korisnik implements UserDetails{
         this.username = username;
         this.email = email;
         this.password = password;
+        this.currPattern = null;
         // this.finishedPatterns = new ArrayList<Pattern>();
     }
 
@@ -98,6 +103,16 @@ public class Korisnik implements UserDetails{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
+
+
+    public Pattern getCurrPattern() {
+        return this.currPattern;
+    }
+
+    public void setCurrPattern(Pattern currPattern) {
+        this.currPattern = currPattern;
+    }
+
 
     // public List<Pattern> getFinishedPatterns() {
     //     return this.finishedPatterns;

@@ -1,6 +1,7 @@
 package com.ftn.sbnz.model.models;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.util.Objects;
 
 @Entity
 public class Pattern {
@@ -37,8 +39,8 @@ public class Pattern {
     @Column
     private String patternImage;
 
-    @ElementCollection
-    private List<String> extras;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> extras;
 
     @Column
     private Boolean done;
@@ -51,7 +53,7 @@ public class Pattern {
     }
     
 
-    public Pattern(Integer id, String name, Difficulty difficultyLevel, Double crochetHookSize, List<Yarn> yarns, String patternImage, List<String> extras, Boolean done, CrochetType parentType) {
+    public Pattern(Integer id, String name, Difficulty difficultyLevel, Double crochetHookSize, List<Yarn> yarns, String patternImage, Set<String> extras, Boolean done, CrochetType parentType) {
         this.id = id;
         this.name = name;
         this.difficultyLevel = difficultyLevel;
@@ -114,11 +116,11 @@ public class Pattern {
         this.patternImage = patternImage;
     }
 
-    public List<String> getExtras() {
+    public Set<String> getExtras() {
         return this.extras;
     }
 
-    public void setExtras(List<String> extras) {
+    public void setExtras(Set<String> extras) {
         this.extras = extras;
     }
 
@@ -152,6 +154,19 @@ public class Pattern {
             ", done='" + getDone() + "'" +
             ", parentType='" + getParentType() + "'" +
             "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pattern that = (Pattern) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
 }

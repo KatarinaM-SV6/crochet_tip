@@ -1,7 +1,13 @@
 package com.ftn.sbnz.model.models;
 
+import org.eclipse.sisu.Nullable;
+import java.util.Objects;
+
 public class Recommendation {
+
     private Pattern pattern;
+
+    @Nullable
     private Boolean accepted;
 
 
@@ -10,7 +16,7 @@ public class Recommendation {
 
     public Recommendation(Pattern pattern) {
         this.pattern = pattern;
-        this.accepted = false;
+        this.accepted = null;
     }
 
 
@@ -38,5 +44,21 @@ public class Recommendation {
             ", accepted='" + getAccepted() + "'" +
             "}";
     }
-    
+
+    public Boolean isAccepted() {
+        return this.accepted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Recommendation that = (Recommendation) o;
+        return Objects.equals(pattern.getId(), that.pattern.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern, accepted);
+    }
 }

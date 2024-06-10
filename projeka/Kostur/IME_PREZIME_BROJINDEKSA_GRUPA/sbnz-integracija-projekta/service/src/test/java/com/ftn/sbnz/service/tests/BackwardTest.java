@@ -1,11 +1,15 @@
 package com.ftn.sbnz.service.tests;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.junit.Test;
+import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import com.ftn.sbnz.model.events.TimeEvent;
 import com.ftn.sbnz.model.models.Color;
 import com.ftn.sbnz.model.models.CrochetType;
 import com.ftn.sbnz.model.models.Difficulty;
@@ -51,7 +55,7 @@ public class BackwardTest {
         KieSession ksession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kc, ksessionName);
 
         CrochetType ctRoot = new CrochetType("Crochet", "", false);
-        CrochetType ct11 = new CrochetType("Amigurumi", "Crochet", false);
+        CrochetType ct11 = new CrochetType("Amigurumi", "Crochet", true);
         CrochetType ct12 = new CrochetType("Clothes", "Crochet", false);
         CrochetType ct21 = new CrochetType("Animals", "Amigurumi", false);
         CrochetType ct22 = new CrochetType("WinterClothes", "Clothes", false);
@@ -59,20 +63,20 @@ public class BackwardTest {
         Pattern p1 = new Pattern(
             1, 
             "Ducky",
-            Difficulty.BEGGINER, 
+            Difficulty.ADVANCED, 
             6.0, 
             Arrays.asList(
                 new Yarn(YarnType.ACRYLLIC, WoolSize.BULKY, 100, Color.YELLOW), 
                 new Yarn(YarnType.ACRYLLIC, WoolSize.BULKY, 50, Color.ORANGE)
                 ), 
             "image", 
-            Arrays.asList("sewing needle", "scissors"),
-            true,
+            new HashSet<>(Arrays.asList("sewing needle", "scissors")),
+            false,
             ct21
         );
 
         Pattern p2 = new Pattern(
-            1, 
+            2, 
             "Shrek Shirt",
             Difficulty.ADVANCED, 
             6.0, 
@@ -82,7 +86,7 @@ public class BackwardTest {
                 new Yarn(YarnType.COTTON, WoolSize.BULKY, 100, Color.BROWN)
                 ), 
             "image", 
-            Arrays.asList("sewing needle", "scissors"),
+            new HashSet<>(Arrays.asList("sewing needle", "scissors")),
             false,
             ct22
         );
@@ -95,18 +99,18 @@ public class BackwardTest {
         ksession.insert(p1);
         ksession.insert(p2);
 
-        Preference preference = new Preference(Difficulty.ADVANCED, ct22);
-        Recommendation rec = new Recommendation(p2);
-        System.out.println(rec);
+        Preference preference = new Preference(Difficulty.ADVANCED);
+        // Recommendation rec = new Recommendation(p2);
+        // System.out.println(rec);
         ksession.insert(preference);
 
         int firedRules = ksession.fireAllRules();
         System.out.println(firedRules);
+        Collection<?> timeEvents = ksession.getObjects(new ClassObjectFilter(Recommendation.class));
+        for (Object rec : timeEvents) {
+            System.out.println(rec);
+        }
     }
 
-    @Test
-    public void testFindRec() {
-
-    }
 }
 

@@ -10,35 +10,36 @@ import com.ftn.sbnz.model.models.CrochetPeriod;
 import com.ftn.sbnz.model.events.Notification;
 
 
-rule "Delete all Notifications"
-    when
-        $stopEvent: TimeEvent(actionType == ActionType.STOP, $stopTime: executionTime)
-        $startEvent: TimeEvent(
-            actionType == ActionType.START, 
-            $startTime: executionTime
-        )
-
-// rule "Time Difference Between Stop and Start"
+// rule "Delete all Notifications"
 //     when
 //         $stopEvent: TimeEvent(actionType == ActionType.STOP, $stopTime: executionTime)
 //         $startEvent: TimeEvent(
 //             actionType == ActionType.START, 
-//             $startTime: executionTime)
-//     then
-//         Date stopTime = $stopTime;
-//         Date startTime = $startTime;
-//         long minutesDifference = (stopTime.getTime() - startTime.getTime())/ 60000;
-//         insert(new CrochetPeriod(1, Duration.ofMinutes(minutesDifference), LocalDate.now()));
-//         delete($stopEvent);
-//         delete($startEvent);
-//         System.out.println("Time difference: " + minutesDifference + " minutes");
-// end
+//             $startTime: executionTime
+//         )
+
+rule "Time Difference Between Stop and Start"
+    when
+        $stopEvent: TimeEvent(actionType == ActionType.STOP, $stopTime: executionTime)
+        $startEvent: TimeEvent(
+            actionType == ActionType.START, 
+            $startTime: executionTime)
+    then
+        Date stopTime = $stopTime;
+        Date startTime = $startTime;
+        long minutesDifference = (stopTime.getTime() - startTime.getTime())/ 60000;
+        insert(new CrochetPeriod(Duration.ofMinutes(minutesDifference), LocalDate.now()));
+        delete($stopEvent);
+        delete($startEvent);
+        System.out.println("Time difference: " + minutesDifference + " minutes");
+end
 
 rule "Take a break"
+agenda-group "cep-group"
     when
         $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
         not($pause: TimeEvent()
-            over window:time(2h)
+            over window:time(2s)
         )
         not (Notification())
     then
@@ -47,10 +48,11 @@ rule "Take a break"
 end
 
 rule "Take a break 2"
+agenda-group "cep-group"
     when
         $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
         not($pause: TimeEvent()
-            over window:time(150m)
+            over window:time(20s)
         )
         $notification: Notification(type == "break1")
         not (Notification(type!="break1"))

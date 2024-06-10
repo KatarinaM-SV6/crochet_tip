@@ -6,12 +6,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.sbnz.model.models.Korisnik;
+import com.ftn.sbnz.model.models.Pattern;
+import com.ftn.sbnz.service.model.LoginDTO;
 import com.ftn.sbnz.service.services.IUserService;
 import com.ftn.sbnz.service.services.implementations.UserService;
 import com.ftn.sbnz.service.utils.TokenUtils;
@@ -33,5 +37,18 @@ public class UserController {
     public ResponseEntity<?> register(@RequestBody Korisnik dto) {
         String ret = userService.register(dto);
         return new ResponseEntity<String>(ret, HttpStatus.OK);
+    }
+
+    @PostMapping(value="/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
+        String ret = userService.login(dto);
+        return new ResponseEntity<String>(ret, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/current-project", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestHeader("Authorization") String token) {
+        Integer userId = tokenUtils.getIdFromToken(token.substring(7));
+        Pattern pattern = userService.getCurrentProject(userId);
+        return new ResponseEntity<Pattern>(pattern, HttpStatus.OK);
     }
 }

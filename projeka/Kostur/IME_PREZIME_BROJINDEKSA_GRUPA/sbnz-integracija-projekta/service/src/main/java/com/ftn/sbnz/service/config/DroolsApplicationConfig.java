@@ -25,9 +25,9 @@ public class DroolsApplicationConfig {
     return kieContainer;
   }
 
-  @Bean
-  public KieSession kieSession(KieContainer kieContainer) {
-    KieSession ksession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, ksessionName);
-    return ksession;
-  }
+  // @Bean
+  // public KieSession kieSession(KieContainer kieContainer) {
+  //   KieSession ksession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, ksessionName);
+  //   return ksession;
+  // }
 }

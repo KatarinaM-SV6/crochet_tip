@@ -31,8 +31,7 @@ public class CrochetPeriod implements Serializable{
     public CrochetPeriod() {
     }
 
-    public CrochetPeriod(Korisnik user, Duration duration, LocalDate date) {
-        this.user = user;
+    public CrochetPeriod(Duration duration, LocalDate date) {
         this.duration = duration;
         this.date = date;
     }
