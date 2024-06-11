@@ -17,4 +17,6 @@ public interface IUserService {
     void setCurrentProject(Integer userId, Pattern pattern);
 
     Pattern getCurrentProject(Integer userId);
+
+    Korisnik finishCurrentProject(Integer userId);
 }

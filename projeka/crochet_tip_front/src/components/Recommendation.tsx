@@ -2,6 +2,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import axios from "axios";
 import { useNavigate, useNavigation } from "react-router-dom";
+import Stopwatch from "./Stopwatch";
 
 interface HomescreenProps {}
 
@@ -90,7 +91,7 @@ const Recommendation: FunctionComponent<HomescreenProps> = () => {
           <CustomButton title="Accept" onClick={handleAccept} />
           <CustomButton title="Reject" onClick={handleReject} />
         </div>
-      ) : null}
+      ) : <Stopwatch/>}
     </div>
   );
 };

@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.stopwatch-time {
+  text-align: center;
+  color: #333;
+  font-size: 80px;
+}
+
+.stopwatch-buttons {
+  display: flex;
+  justify-content: center;
+}
+

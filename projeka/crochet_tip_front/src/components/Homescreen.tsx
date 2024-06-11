@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import CustomButton from "./CustomButton";
 import axios from "axios";
 import { useNavigate, useNavigation } from "react-router-dom";
+import WebSocketComponent from "../WebSocketComponent";
 
 interface HomescreenProps {}
 

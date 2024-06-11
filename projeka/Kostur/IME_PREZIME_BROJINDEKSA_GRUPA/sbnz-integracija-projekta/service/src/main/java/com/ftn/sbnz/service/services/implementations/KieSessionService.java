@@ -17,6 +17,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Agenda;
 import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.ftn.sbnz.model.events.TimeEvent;
@@ -48,6 +49,10 @@ public class KieSessionService {
     private  String ksessionName = "mainKsession";
 
     private CepTask cepTask;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private  ConcurrentHashMap<Integer, KieSession> userSessions = new ConcurrentHashMap<>();
@@ -80,7 +85,8 @@ public class KieSessionService {
         Collection<?> timeEvents = kieSession.getObjects(new ClassObjectFilter(TimeEvent.class));
         
         if (cepTask == null) {
-            this.cepTask = new CepTask(kieSession, userId);
+            System.out.println("YES");
+            this.cepTask = new CepTask(kieSession, userId, simpMessagingTemplate);
             this.cepTask.start();
             scheduler.scheduleAtFixedRate(cepTask, 0,1, TimeUnit.SECONDS);
         } else if (!cepTask.isRunning()){

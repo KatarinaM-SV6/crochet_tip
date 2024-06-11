@@ -52,4 +52,11 @@ public class UserController {
         Pattern pattern = userService.getCurrentProject(userId);
         return new ResponseEntity<Pattern>(pattern, HttpStatus.OK);
     }
+
+    @GetMapping(value="/finish-project", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> finishCurrentProject(@RequestHeader("Authorization") String token) {
+        Integer userId = tokenUtils.getIdFromToken(token.substring(7));
+        Korisnik user = userService.finishCurrentProject(userId);
+        return new ResponseEntity<Korisnik>(user, HttpStatus.OK);
+    }
 }

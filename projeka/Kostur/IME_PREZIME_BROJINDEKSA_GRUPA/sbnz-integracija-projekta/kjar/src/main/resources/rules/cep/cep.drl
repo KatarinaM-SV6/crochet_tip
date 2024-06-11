@@ -52,27 +52,29 @@ agenda-group "cep-group"
     when
         $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
         not($pause: TimeEvent()
-            over window:time(20s)
+            over window:time(10s)
         )
         $notification: Notification(type == "break1")
         not (Notification(type!="break1"))
     then
-        insert(new Notification(1, "You still haven't taken a break. Maybe you should!", "break2"));
+        insert(new Notification(2, "You still haven't taken a break. Maybe you should!", "break2"));
         System.out.println("Take a break2!");
 end
 
-// rule "Take a break 3"
-//     when
-//         $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
-//         not($pause: TimeEvent()
-//             over window:time(180m)
-//         )
-//         $notification: Notification(type == "break2")
-//         not (Notification(type!="break3"))
-//     then
-//         insert(new Notification(1, "You still haven't taken a break. Maybe you should!", "break3"));
-//         System.out.println("Take a break3!");
-// end
+rule "Take a break 3"
+agenda-group "cep-group"
+    when
+        $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
+        not($pause: TimeEvent()
+            over window:time(15s)
+        )
+        $notification: Notification(type == "break1")
+        not (Notification(type!="break3"))
+    then
+        insert(new Notification(3, "Now you have to take a break!", "break3"));
+        insert(new TimeEvent(1, ActionType.STOP));
+        System.out.println("Take a break3!");
+end
 
 // rule "Take a break 3"
 //     when

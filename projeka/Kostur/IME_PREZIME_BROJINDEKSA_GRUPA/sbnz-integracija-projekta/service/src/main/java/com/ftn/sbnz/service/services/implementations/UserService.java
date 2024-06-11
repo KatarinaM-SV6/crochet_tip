@@ -2,12 +2,18 @@ package com.ftn.sbnz.service.services.implementations;
 
 import com.ftn.sbnz.model.models.Korisnik;
 import com.ftn.sbnz.model.models.Pattern;
+import com.ftn.sbnz.model.models.Recommendation;
 import com.ftn.sbnz.service.model.LoginDTO;
 import com.ftn.sbnz.service.model.loginResponseDTO;
 import com.ftn.sbnz.service.repositories.IUserRepository;
 import com.ftn.sbnz.service.services.IUserService;
 import com.ftn.sbnz.service.utils.TokenUtils;
 
+import java.util.Collection;
+
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -98,6 +104,28 @@ public class UserService implements IUserService, UserDetailsService {
     public Pattern getCurrentProject(Integer userId) {
         Korisnik user = get(userId);
         return user.getCurrPattern();
+    }
+
+    @Override
+    public Korisnik finishCurrentProject(Integer userId) {
+        Korisnik user = get(userId);
+        Pattern pat = user.getCurrPattern();
+        KieSession kieSession = kieSessionService.getUserSession(userId);
+        Collection<?> patterns = kieSession.getObjects(new ClassObjectFilter(Pattern.class));
+        Pattern foundPat = null;
+        FactHandle factHandle = null;
+        for (Object obj : patterns) {
+            if (obj.equals(pat)) { // Ensure this check matches your Recommendation's equals method
+                foundPat = (Pattern) obj;
+                factHandle = kieSession.getFactHandle(foundPat);
+                break;
+            }
+        }
+        pat.setDone(true);
+
+        kieSession.update(factHandle, pat);
+        user.setCurrPattern(null);
+        return userRepository.save(user);
     }
 
 }

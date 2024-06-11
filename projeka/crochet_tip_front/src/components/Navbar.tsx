@@ -1,6 +1,9 @@
 import React from "react";
 import "../App.css";
 import { Link } from "react-router-dom";
+import WebSocketComponent from "../WebSocketComponent";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {
@@ -25,6 +28,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             <Link to={"/login"} className="text-[16px] text-white px-[10px]" onClick={handleLogout}>
               Logout
             </Link>
+            <ToastContainer className="w-[120px]"/>
           </div>
         )}
       </div>

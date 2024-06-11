@@ -1,12 +1,64 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
-import "./stopwatch.css";
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 const Stopwatch = () => {
-  // state to store time
   const [time, setTime] = useState(0);
-
-  // state to check stopwatch running or not
+  const navigate = useNavigate();
   const [isRunning, setIsRunning] = useState(false);
+
+  const finish = async () => {
+    try {
+      const token = localStorage.getItem("Authorization");
+
+      const config = {
+        headers: {
+          Authorization: `${token}`,
+        },
+      };
+
+      const result = await axios.get("http://localhost:8080/api/finish-project",config);
+      localStorage.setItem("user", JSON.stringify(result.data));
+      navigate("/user/homescreen");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleStart = async () => {
+    try {
+      const token = localStorage.getItem("Authorization");
+
+      const config = {
+        headers: {
+          Authorization: `${token}`,
+        },
+      };
+
+      await axios.get("http://localhost:8080/api/timer/start",config);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleStop = async () => {
+    try {
+      const token = localStorage.getItem("Authorization");
+
+      const config = {
+        headers: {
+          Authorization: `${token}`,
+        },
+      };
+
+      await axios.get("http://localhost:8080/api/timer/stop",config);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     let intervalId: any;
@@ -16,22 +68,66 @@ const Stopwatch = () => {
     }
     return () => clearInterval(intervalId);
   }, [isRunning, time]);
+  const user = JSON.parse(localStorage.getItem("user")!);
+  let userId = '';
 
-  // Hours calculation
+  if (user) {
+      userId = user.id;
+  }
+  
+  useEffect(() => {
+      // Create a new SockJS client
+      const socket = new SockJS('http://localhost:8080/api/socket');
+      // Create a new STOMP client
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+      });
+  
+      // Function to handle successful connection
+      const onConnect = () => {
+        console.log('Connected');
+        // Subscribe to the topic
+        console.log('/topic/' + userId);
+        stompClient.subscribe('/topic/' + userId, (message) => {
+          toast.info(message.body);
+          if (message.body === "Now you have to take a break!"){
+            startAndStop();
+          }
+        });
+      };
+  
+      // Function to handle disconnection
+      const onDisconnect = () => {
+        console.log('Disconnected');
+      };
+  
+      // Set up the STOMP client event handlers
+      stompClient.onConnect = onConnect;
+      stompClient.onDisconnect = onDisconnect;
+      stompClient.activate();
+  
+      // Cleanup function
+      return () => {
+        if (stompClient.connected) {
+          stompClient.deactivate();
+        }
+      };
+    }, []);
   const hours = Math.floor(time / 360000);
-
-  // Minutes calculation
   const minutes = Math.floor((time % 360000) / 6000);
-
-  // Seconds calculation
   const seconds = Math.floor((time % 6000) / 100);
-
-  // Milliseconds calculation
   const milliseconds = time % 100;
 
   // Method to start and stop timer
   const startAndStop = () => {
+    if (isRunning) {
+        handleStop();
+    } else {
+        handleStart();
+    }
     setIsRunning(!isRunning);
+    
   };
 
   // Method to reset timer back to 0
@@ -45,12 +141,12 @@ const Stopwatch = () => {
         {seconds.toString().padStart(2, "0")}:
         {milliseconds.toString().padStart(2, "0")}
       </p>
-      <div className="stopwatch-buttons">
-        <button className="stopwatch-button" onClick={startAndStop}>
+      <div className="stopwatch-buttons gap-10 mb-[10px]">
+        <button className="bg-amber-700 hover:bg-amber-500 shadow-md rounded px-8 h-[60px] w-[50%] text-white text-2xl" onClick={startAndStop}>
           {isRunning ? "Stop" : "Start"}
         </button>
-        <button className="stopwatch-button" onClick={reset}>
-          Reset
+        <button className="bg-amber-900 hover:bg-amber-500 shadow-md rounded px-8 h-[60px] w-[50%] text-white text-2xl" onClick={finish}>
+            Finish
         </button>
       </div>
     </div>
