@@ -1,0 +1,66 @@
+package backward;
+
+import com.ftn.sbnz.model.models.CrochetType;
+import com.ftn.sbnz.model.models.Preference;
+import com.ftn.sbnz.model.models.Recommendation;
+import com.ftn.sbnz.model.models.Pattern;
+
+query isNotDisliked( String name, String parentCrochetType )
+    CrochetType( name, parentCrochetType, false; )
+    and
+    (
+    ( CrochetType( parentCrochetType, parentsParentType, false; ) and isNotDisliked( parentCrochetType, parentsParentType; )
+    )
+    or CrochetType(parentCrochetType, "", false; )
+    )
+end
+
+rule "Find recommendation"
+agenda-group "rec-group"
+activation-group "find-recommendation-group"
+    when
+        not(Recommendation())
+        Preference($diff: difficulty)
+        $pattern: Pattern(difficultyLevel == $diff, done == false)
+    then
+        Recommendation r =new Recommendation($pattern); 
+        insert(r);
+        System.out.println("THIS IS FIRST REC");  
+end
+
+rule "Find new recommendation"
+agenda-group "rec-group"
+activation-group "find-recommendation-group"
+no-loop true
+    when
+        Recommendation($oldPattern: pattern, accepted == false)
+        Preference($diff: difficulty)
+        $pattern: Pattern(this != $oldPattern, difficultyLevel == $diff, done == false)
+    then
+        Recommendation r =new Recommendation($pattern); 
+        insert(r);
+        System.out.println("THIS IS SECOND REC");
+end
+
+rule "isNotDislikedType"
+agenda-group "rec-group"
+    when
+        $p: Recommendation(accepted == null, $oldPattern: pattern)
+        not(isNotDisliked($p.pattern.parentType.name, parentCrochetType; ))
+        Preference($diff: difficulty)
+        $pattern: Pattern(this != $oldPattern, difficultyLevel == $diff, done == false)
+    then
+        Recommendation r = new Recommendation($pattern); 
+        delete($p);
+        insert(r);
+        System.out.println("raws");
+end
+
+// rule "isNotDislikedType2"
+// agenda-group "recommendation-group"
+//     when
+//         $c: CrochetType( name == "Animals")
+//         isNotDisliked($c.name, parent; )
+//     then
+//         System.out.println("All good test");
+// end

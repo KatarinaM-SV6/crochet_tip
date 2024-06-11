@@ -1,0 +1,94 @@
+package cep;
+
+import com.ftn.sbnz.model.events.TimeEvent;
+import com.ftn.sbnz.model.models.ActionType;
+import java.time.temporal.ChronoUnit;
+import java.time.Duration;
+import java.util.Date;
+import java.time.LocalDate;
+import com.ftn.sbnz.model.models.CrochetPeriod;
+import com.ftn.sbnz.model.events.Notification;
+
+
+// rule "Delete all Notifications"
+//     when
+//         $stopEvent: TimeEvent(actionType == ActionType.STOP, $stopTime: executionTime)
+//         $startEvent: TimeEvent(
+//             actionType == ActionType.START, 
+//             $startTime: executionTime
+//         )
+
+rule "Time Difference Between Stop and Start"
+    when
+        $stopEvent: TimeEvent(actionType == ActionType.STOP, $stopTime: executionTime)
+        $startEvent: TimeEvent(
+            actionType == ActionType.START, 
+            $startTime: executionTime)
+    then
+        Date stopTime = $stopTime;
+        Date startTime = $startTime;
+        long minutesDifference = (stopTime.getTime() - startTime.getTime())/ 60000;
+        insert(new CrochetPeriod(Duration.ofMinutes(minutesDifference), LocalDate.now()));
+        delete($stopEvent);
+        delete($startEvent);
+        System.out.println("Time difference: " + minutesDifference + " minutes");
+end
+
+rule "Take a break"
+agenda-group "cep-group"
+    when
+        $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
+        not($pause: TimeEvent()
+            over window:time(2s)
+        )
+        not (Notification())
+    then
+        insert(new Notification(1, "You've been crocheting for 2 hours. Maybe you should take a little break!", "break1"));
+        System.out.println("Take a break!");
+end
+
+rule "Take a break 2"
+agenda-group "cep-group"
+    when
+        $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
+        not($pause: TimeEvent()
+            over window:time(20s)
+        )
+        $notification: Notification(type == "break1")
+        not (Notification(type!="break1"))
+    then
+        insert(new Notification(2, "You still haven't taken a break. Maybe you should!", "break2"));
+        System.out.println("Take a break2!");
+end
+
+rule "Take a break 3"
+agenda-group "cep-group"
+    when
+        $startEvent: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
+        not($pause: TimeEvent()
+            over window:time(180m)
+        )
+        $notification: Notification(type == "break1")
+        not (Notification(type!="break3"))
+    then
+        insert(new Notification(3, "Now you have to take a break!", "break3"));
+        insert(new TimeEvent(1, ActionType.STOP));
+        System.out.println("Take a break3!");
+end
+
+// rule "Take a break 3"
+//     when
+//         $t1: TimeEvent(actionType == ActionType.START, $startTime: executionTime)
+//         Number(intValue >= 10) from accumulate(
+//             $t2: Notification(
+//                 this != $t1, 
+//                 customerId == $cId, 
+//                 this after[0s, 1h] $t1
+//             ),
+//             count($t2)
+//         )
+//     then
+//         insert(new Notification(1, "You still haven't taken a break. Maybe you should!", "break3"));
+//         System.out.println("Take a break3!");
+// end
+
