@@ -20,6 +20,7 @@ rule "Find hours crocheted past month"
             result(count)
         )
     then
+        System.out.println($n.toMinutes());
         Stat stat = new Stat("monthly", Integer.valueOf((int) $n.toMinutes()));
         insert(stat);
 end

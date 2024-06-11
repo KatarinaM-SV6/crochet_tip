@@ -66,8 +66,17 @@ public class KieSessionService {
         KieSession kieSession = KnowledgeSessionHelper.getStatefulKnowledgeSession(kieContainer, ksessionName);
         List<CrochetType> crochetTypes = patternUtils.getCrochetTypes();
 		List<Pattern> patterns = patternService.loadAllPatterns();
-
-        crochetTypes.forEach((type) -> kieSession.insert(type));
+        CrochetPeriod cp1 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 6, 1));
+        CrochetPeriod cp2 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 5, 15));
+        CrochetPeriod cp3 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 6, 10));
+        
+        kieSession.insert(cp1);
+        kieSession.insert(cp2);
+        kieSession.insert(cp3);
+        crochetTypes.forEach((type) -> {
+            kieSession.insert(type);
+            System.out.println(type);    
+        });
 		patterns.forEach((pattern) -> kieSession.insert(pattern));
         
         userSessions.put(user.getId(), kieSession);
@@ -120,6 +129,7 @@ public class KieSessionService {
         KieSession kieSession = getUserSession(userId);
         Agenda agenda = kieSession.getAgenda();
         agenda.getAgendaGroup("rec-group").setFocus();
+        
         kieSession.fireAllRules();
 
         Collection<?> recommendations = kieSession.getObjects(new ClassObjectFilter(Recommendation.class));
@@ -189,10 +199,12 @@ public class KieSessionService {
     }
 
     public StatsDTO getStats(Integer userId) {
-        createCrochetPeriodsForUser(userId);
 		KieSession kieSession = getUserSession(userId); 
         kieSession.fireAllRules();
-
+        Collection<?> periods = kieSession.getObjects(new ClassObjectFilter(CrochetPeriod.class));
+        for (Object obj : periods) {
+            System.out.println(obj);
+        }
         Collection<?> stats = kieSession.getObjects(new ClassObjectFilter(Stat.class));
         StatsDTO dto = new StatsDTO();
 
@@ -218,10 +230,10 @@ public class KieSessionService {
                 default:
                     break;
             }
-            FactHandle handle = kieSession.getFactHandle(obj);
-            if (handle != null) {
-                kieSession.delete(handle);
-            }
+            // FactHandle handle = kieSession.getFactHandle(obj);
+            // if (handle != null) {
+            //     kieSession.delete(handle);
+            // }
         }
 
         return dto;
@@ -230,12 +242,6 @@ public class KieSessionService {
     public void createCrochetPeriodsForUser(Integer userId) {
 		KieSession kieSession = getUserSession(userId); 
 
-        CrochetPeriod cp1 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 6, 1));
-        CrochetPeriod cp2 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 5, 15));
-        CrochetPeriod cp3 = new CrochetPeriod(Duration.ofMinutes(30), LocalDate.of(2024, 6, 10));
-        
-        kieSession.insert(cp1);
-        kieSession.insert(cp2);
-        kieSession.insert(cp3);
+
     }
 }

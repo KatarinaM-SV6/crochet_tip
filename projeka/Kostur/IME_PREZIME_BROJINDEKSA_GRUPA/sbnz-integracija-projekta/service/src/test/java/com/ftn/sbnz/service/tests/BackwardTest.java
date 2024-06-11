@@ -104,6 +104,7 @@ public class BackwardTest {
         // System.out.println(rec);
         ksession.insert(preference);
 
+        ksession.getAgenda().getAgendaGroup("rec-group").setFocus();
         int firedRules = ksession.fireAllRules();
         System.out.println(firedRules);
         Collection<?> timeEvents = ksession.getObjects(new ClassObjectFilter(Recommendation.class));

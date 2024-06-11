@@ -61,4 +61,13 @@ public class CrochetPeriod implements Serializable{
     }
 
 
+    @Override
+    public String toString() {
+        return "{" +
+            ", user='" + getUserId() + "'" +
+            ", duration='" + getDuration() + "'" +
+            ", date='" + getDate() + "'" +
+            "}";
+    }
+
 }

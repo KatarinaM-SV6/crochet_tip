@@ -42,6 +42,9 @@ const Recommendation: FunctionComponent<HomescreenProps> = () => {
         config
       );
       localStorage.setItem("rec",JSON.stringify({pattern, accepted:true}));
+      const user = JSON.parse(localStorage.getItem("user")!);
+      user.currPattern = response.data.pattern;
+      localStorage.setItem("user", JSON.stringify(user));
       setAccepted(true);
     } catch (error) {
       console.error("Login error:", error);

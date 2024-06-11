@@ -31,7 +31,7 @@ const StatsPage: FunctionComponent<StatsPageProps> = () => {
       setStats(response.data);
     };
 
-    // fetchData();
+    fetchData();
   }, []); // Load data from localStorage on initial render
   return (
     <div className="flex flex-row flex-wrap pt-[100px] justify-center items-center gap-10">
