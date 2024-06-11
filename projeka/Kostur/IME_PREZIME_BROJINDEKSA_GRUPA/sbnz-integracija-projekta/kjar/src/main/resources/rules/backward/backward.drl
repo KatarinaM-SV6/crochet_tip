@@ -51,9 +51,19 @@ agenda-group "rec-group"
         $pattern: Pattern(this != $oldPattern, difficultyLevel == $diff, done == false)
     then
         Recommendation r = new Recommendation($pattern); 
-        delete($p);
         insert(r);
         System.out.println("raws");
+end
+
+rule "isDislikedType"
+agenda-group "rec-group"
+    when
+        $p: Recommendation(accepted == null, $oldPattern: pattern)
+        not(isNotDisliked($p.pattern.parentType.name, parentCrochetType; ))
+        Preference($diff: difficulty)
+        not(Pattern(this != $oldPattern, difficultyLevel == $diff, done == false))
+    then
+        System.out.println("No other options left");
 end
 
 // rule "isNotDislikedType2"
